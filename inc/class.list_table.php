@@ -26,6 +26,14 @@ class list_table
 
         add_action('admin_menu', [$this, 'add_user_sub_menu']);
         add_action('admin_enqueue_scripts', [$this, 'load_custom_wp_frontend_style']);
+
+        add_action('user_new_form', [$this, 'passfield']);
+        add_action('after_signup_user', [$this, 'setpass'], 1000, 4);
+        add_action('in_admin_header', function () {
+           if ( isset( $_GET['update'] ) )
+               $_GET['update'] = 'addnoconfirmation';
+        });
+
     }
 
     public function load_custom_wp_frontend_style() {
@@ -52,15 +60,93 @@ class list_table
 
         wp_register_script('pmpro_mu_editor-users-custom', pmpro_mu_upage_PLUGIN_URL . 'js/users.js', array('jquery'), '', true);
 
+        $adminurl = admin_url();
+
+        $get_quantity = get_user_meta(get_current_user_id(), 'set_editor_quantity', true);
+
+
         wp_localize_script('pmpro_mu_editor-users-custom', 'users_custom', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'is_super_admin' => is_super_admin()
+            'is_super_admin' => is_super_admin(),
+            'admin_dir' => $adminurl,
+            'quantity_av' => $get_quantity
         ));
         wp_enqueue_script('pmpro_mu_editor-users-custom');
+        wp_enqueue_script('user-profile');
 
 
     }
 
+
+    public function passfield() {
+        ?>
+
+        <table class="form-table setpass">
+
+
+
+            <tr class="form-field form-required user-pass1-wrap">
+                <th scope="row">
+                    <label for="pass1">
+                        <?php _e( 'Password' ); ?>
+                        <span class="description hide-if-js"><?php _e( '(required)' ); ?></span>
+                    </label>
+                </th>
+                <td>
+                    <input class="hidden" value=" " /><!-- #24364 workaround -->
+                    <button type="button" class="button wp-generate-pw hide-if-no-js"><?php _e( 'Show password' ); ?></button>
+                    <div class="wp-pwd hide-if-js">
+                        <?php $initial_password = wp_generate_password( 24 ); ?>
+                        <span class="password-input-wrapper">
+					<input type="password" name="pass1" id="pass1" class="regular-text" autocomplete="off" data-reveal="1" data-pw="<?php echo esc_attr( $initial_password ); ?>" aria-describedby="pass-strength-result" />
+				</span>
+                        <button type="button" class="button wp-hide-pw hide-if-no-js" data-toggle="0" aria-label="<?php esc_attr_e( 'Hide password' ); ?>">
+                            <span class="dashicons dashicons-hidden"></span>
+                            <span class="text"><?php _e( 'Hide' ); ?></span>
+                        </button>
+                        <button type="button" class="button wp-cancel-pw hide-if-no-js" data-toggle="0" aria-label="<?php esc_attr_e( 'Cancel password change' ); ?>">
+                            <span class="text"><?php _e( 'Cancel' ); ?></span>
+                        </button>
+                        <div style="display:none" id="pass-strength-result" aria-live="polite"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr class="form-field form-required user-pass2-wrap hide-if-js">
+                <th scope="row"><label for="pass2"><?php _e( 'Repeat Password' ); ?> <span class="description"><?php _e( '(required)' ); ?></span></label></th>
+                <td>
+                    <input name="pass2" type="password" id="pass2" autocomplete="off" />
+                </td>
+            </tr>
+            <tr class="pw-weak">
+                <th><?php _e( 'Confirm Password' ); ?></th>
+                <td>
+                    <label>
+                        <input type="checkbox" name="pw_weak" class="pw-checkbox" />
+                        <?php _e( 'Confirm use of weak password' ); ?>
+                    </label>
+                </td>
+            </tr>
+
+            <input type="hidden" name="noconfirmation" value="1">
+
+        </table>
+
+
+        <?php
+    }
+
+    public function setpass($user, $user_email, $key, $meta) {
+
+
+        //file_put_contents(pmpro_mu_editor_PLUGIN_DIR."datan-".time().".txt", maybe_serialize([$_POST['pass1'], $user->ID]), FILE_APPEND);
+
+        $user = get_user_by('login', $user);
+
+
+        wp_set_password( $_POST['pass1'], $user->ID );
+
+
+    }
 
     public function add_user_sub_menu() {
 
