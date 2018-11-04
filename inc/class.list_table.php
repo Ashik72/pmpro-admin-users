@@ -34,6 +34,15 @@ class list_table
                $_GET['update'] = 'addnoconfirmation';
         });
 
+        add_action('wp_dashboard_setup', [$this, 'enqueue_script']);
+
+
+    }
+
+    public function enqueue_script() {
+
+        wp_enqueue_script('pmpro_mu_editor-users-custom');
+
     }
 
     public function load_custom_wp_frontend_style() {
@@ -58,7 +67,8 @@ class list_table
 
         }
 
-        wp_register_script('pmpro_mu_editor-users-custom', pmpro_mu_upage_PLUGIN_URL . 'js/users.js', array('jquery'), '', true);
+
+        wp_register_script('pmpro_mu_editor-users-custom', pmpro_mu_upage_PLUGIN_URL . 'js/users.js', array('jquery'), '', false);
 
         $adminurl = admin_url();
 

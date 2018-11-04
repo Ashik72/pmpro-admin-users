@@ -38,8 +38,6 @@ jQuery(document).ready(function($) {
             //
             // });
 
-            console.log(users_custom.quantity_av);
-
             $('[href="users.php"] .wp-menu-name').text("My Team");
             $('[href="users.php?page=users-custom"]').text("Team Members");
             $('[href="user-new.php"]').text("Add Member");
@@ -53,6 +51,7 @@ jQuery(document).ready(function($) {
             console.log($("#role").parent("td"));
             $("#role").parent("td").parent("tr").css('display', 'none');
             $("#role").val("editor");
+            $('[href="users.php"]').attr("href", "users.php?page=users-custom");
 
         }
 
