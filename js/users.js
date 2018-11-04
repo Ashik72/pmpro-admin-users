@@ -33,20 +33,25 @@ jQuery(document).ready(function($) {
 
             if (users_custom.is_super_admin) return;
 
+            console.log(users_custom);
+
             // $.getScript( users_custom.admin_dir+"js/user-profile.js", function( data, textStatus, jqxhr ) {
             //
             //
             // });
+
+
+            $('#add-existing-user').css("display", "none");
+            $('#adduser').css("display", "none");
+            $('#add-existing-user + p').css("display", "none");
+            $('h2#create-new-user').css("display", "none");
+
 
             $('[href="users.php"] .wp-menu-name').text("My Team");
             $('[href="users.php?page=users-custom"]').text("Team Members");
             $('[href="user-new.php"]').text("Add Member");
             $('[href="profile.php"]').css("display", "none");
 
-            $('#add-existing-user').css("display", "none");
-            $('#adduser').css("display", "none");
-            $('#add-existing-user + p').css("display", "none");
-            $('h2#create-new-user').css("display", "none");
 
             console.log($("#role").parent("td"));
             $("#role").parent("td").parent("tr").css('display', 'none');
